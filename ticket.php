@@ -20,6 +20,23 @@ if ($getTicket->rowCount() === 0) {
 
 $ticket = $getTicket->fetch();
 
+
+if (isset($_POST['reply'])) {
+    // TODO: add validation
+    
+    // create message
+    $createMessage = $dbh->prepare("
+        INSERT INTO ticket_messages
+        VALUES (null, :ticketId, :name, UNIX_TIMESTAMP(NOW()), :message)
+    ");
+    $createMessage->execute([
+        ":ticketId" => $ticket['ticket_id'],
+        ":name"     => trim($_POST['name']),
+        ":message"  => trim($_POST['message']),
+    ]);
+    
+}
+
 ?>
 
 <h1>Blackhole <small><?=htmlentities($ticket['subject'])?></small></h1>
@@ -53,3 +70,20 @@ while ($message = $getMessages->fetch()) {
 
 </table>
 
+
+
+<form action="" method="POST">
+    
+    <label>Your Name:
+        <input type="text" name="name" />
+    </label>
+    
+    <Br />
+    <label>Message:
+        <textarea name="message"></textarea>
+    </label>
+    
+    <Br />
+    <button type="submit" name="reply">Reply</button>
+    
+</form>
