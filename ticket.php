@@ -5,9 +5,20 @@ if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
 $getTicket = $dbh->prepare("
-    SELECT *
-    FROM tickets
-    WHERE ticket_id = :ticketId
+    SELECT *, q.rank
+    FROM tickets t
+    LEFT JOIN (
+        SELECT *
+        FROM (
+                SELECT *, @rank := @rank + 1 as rank
+                FROM tickets, (SELECT @rank := 0) r
+                WHERE status = 0
+                ORDER BY date_created
+        ) t
+        WHERE t.ticket_id = :ticketId
+    ) q
+    ON q.ticket_id = t.ticket_id
+    WHERE t.ticket_id = :ticketId
 ");
 $getTicket->execute([
     ":ticketId" => $id,
@@ -42,6 +53,12 @@ if (isset($_POST['reply'])) {
 <h1>Blackhole <small><?=htmlentities($ticket['subject'])?></small></h1>
 
 <a href="/tickets.php?status=open">Return</a>
+
+<br />
+
+<strong>Ticket in the queue: <?=$ticket['rank']?></strong>
+
+<br />
 
 <table style="width:100%;" border="1">
 <?php

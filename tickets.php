@@ -13,6 +13,7 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 <table style="width:100%;" border="1">
     <thead>
         <tr>
+            <th>Queue #</th>
             <th>Ticket ID</th>
             <th>Author</th>
             <th>Subject</th>
@@ -24,10 +25,20 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
     <tbody>
 <?php
 $getTickets = $dbh->prepare("
-    SELECT t.*
+    SELECT t.*, q.rank
     FROM tickets t
+    LEFT JOIN (
+        SELECT *
+        FROM (
+                SELECT *, @rank := @rank + 1 as rank
+                FROM tickets, (SELECT @rank := 0) r
+                WHERE status = 0
+                ORDER BY date_created
+        ) tt
+    ) q
+    ON q.ticket_id = t.ticket_id
     " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
-    ORDER BY ABS(date_updated) DESC
+    ORDER BY ABS(t.date_updated) DESC
 ");
 
 if ($status !== "all")
@@ -37,6 +48,7 @@ $getTickets->execute();
 
 while ($ticket = $getTickets->fetch()) {
     echo "<tr>
+        <td>" . $ticket['rank'] . "</td>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
         <td><a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a> (" . getStatus($ticket['status']) . ")</td>
