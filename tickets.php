@@ -8,7 +8,11 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 
 <a href="/tickets.php?status=open">View Opened Tickets</a> | 
 <a href="/tickets.php?status=all">View All Tickets</a> | 
-<a href="/tickets.php?status=closed">View Closed Tickets</a>
+<a href="/tickets.php?status=closed">View Closed Tickets</a> 
+
+<br />
+
+[ <a href="/create.php">Create Ticket</a> ]
 
 <table style="width:100%;" border="1">
     <thead>
