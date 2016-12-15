@@ -5,7 +5,7 @@ if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
 $getTicket = $dbh->prepare("
-    SELECT *, q.rank
+    SELECT *, q.rank, c.name as category_name
     FROM tickets t
     LEFT JOIN (
         SELECT *
@@ -18,6 +18,8 @@ $getTicket = $dbh->prepare("
         WHERE t.ticket_id = :ticketId
     ) q
     ON q.ticket_id = t.ticket_id
+    LEFT JOIN categories c
+    ON c.category_id = t.category_id
     WHERE t.ticket_id = :ticketId
 ");
 $getTicket->execute([
@@ -59,6 +61,8 @@ if (isset($_POST['reply'])) {
 <strong>Ticket in the queue: <?=$ticket['rank']?></strong>
 
 <br />
+
+<strong>Category: <?=$ticket['category_name']?></strong>
 
 <table style="width:100%;" border="1">
 <?php

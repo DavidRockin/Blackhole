@@ -7,11 +7,12 @@ if (isset($_POST['create'])) {
     // insert ticket info
     $createTicket = $dbh->prepare("
         INSERT INTO tickets
-        VALUES (NULL, :subject, :name, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()), 0)
+        VALUES (NULL, :subject, :name, :category, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()), 0)
     ");
     $createTicket->execute([
         ":subject" => trim($_POST['subject']),
         ":name" => trim($_POST['name']),
+        ":category" => intval($_POST['category']),
     ]);
     
     // ticket id
@@ -56,7 +57,13 @@ if (isset($_POST['create'])) {
     
     <Br />
     <label>Category:
-        TBD
+        <select name="category">
+<?php
+$categories = getCategories();
+foreach ($categories as $category)
+    echo "<option value='" . $category['category_id'] . "'>" . $category['name'] . "</option>" . PHP_EOL;
+?>
+        </select>
     </label>
     
     <Br />

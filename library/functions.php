@@ -6,3 +6,9 @@ function getStatus($status) {
         case 1: return "Closed";
     }
 }
+
+function getCategories() {
+    global $dbh;
+    $getCategories = $dbh->query("SELECT * FROM categories");
+    return $getCategories->fetchAll();
+}
