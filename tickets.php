@@ -38,7 +38,7 @@ while ($ticket = $getTickets->fetch()) {
     echo "<tr>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td>" . htmlentities($ticket['subject']) . " (" . getStatus($ticket['status']) . ")</td>
+        <td><a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a> (" . getStatus($ticket['status']) . ")</td>
         <td>" . date("r", $ticket['date_updated']) . "</td>
         <td>TBD</td>
     </tr>";

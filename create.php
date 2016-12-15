@@ -4,6 +4,7 @@ include __DIR__ . "/library/core.php";
 if (isset($_POST['create'])) {
     // TODO: add validation
     
+    // insert ticket info
     $createTicket = $dbh->prepare("
         INSERT INTO tickets
         VALUES (NULL, :subject, :name, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()), 0)
@@ -13,6 +14,24 @@ if (isset($_POST['create'])) {
         ":name" => trim($_POST['name']),
     ]);
     
+    // ticket id
+    $ticketId = $dbh->lastInsertId();
+    
+    // create message
+    $createMessage = $dbh->prepare("
+        INSERT INTO ticket_messages
+        VALUES (null, :ticketId, :name, UNIX_TIMESTAMP(NOW()), :message)
+    ");
+    $createMessage->execute([
+        ":ticketId" => $ticketId,
+        ":name"     => trim($_POST['name']),
+        ":message"  => trim($_POST['message']),
+    ]);
+    
+    
+    // redirect to ticket page
+    header("Location: /ticket.php?id=" . $ticketId);
+    exit;
     
 }
 ?>
