@@ -8,6 +8,8 @@ Template::header("Create Ticket");
 if (isset($_POST['create'])) {
     // TODO: add validation
     
+    $_SESSION['name'] = trim($_POST['name']);
+    
     // insert ticket info
     $createTicket = $dbh->prepare("
         INSERT INTO tickets
@@ -54,7 +56,7 @@ if (isset($_POST['create'])) {
 <form action="" method="POST">
 	<div class="form-group">
 		<label for="name">Your Name:</label>
-		<input type="text" name="name" class="form-control" id="name" />
+		<input type="text" name="name" class="form-control" id="name" value="<?=isset($_SESSION['name']) ? htmlentities($_SESSION['name']) : ""?>"/>
 	</div>
 	
 	<div class="form-group">

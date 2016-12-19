@@ -41,6 +41,8 @@ $ticket = $getTicket->fetch();
 if (isset($_POST['reply'])) {
     // TODO: add validation
     
+    $_SESSION['name'] = trim($_POST['name']);
+    
     // create message
     $createMessage = $dbh->prepare("
         INSERT INTO ticket_messages
@@ -103,7 +105,7 @@ while ($message = $getMessages->fetch()) {
 		<form action="" method="POST">
 			<div class="form-group">
 				<label for="name">Your Name:</label>
-				<input type="text" name="name" class="form-control" id="name" />
+				<input type="text" name="name" class="form-control" id="name" value="<?=isset($_SESSION['name']) ? htmlentities($_SESSION['name']) : ""?>" />
 			</div>
 			
 			<div class="form-group">
