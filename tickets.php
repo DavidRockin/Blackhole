@@ -8,17 +8,19 @@ Template::header("Tickets");
 $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 ?>
 
-<h1>Blackhole</h1>
+<h1>View Tickets</h1>
 
-<a href="/tickets.php?status=open">View Opened Tickets</a> | 
-<a href="/tickets.php?status=all">View All Tickets</a> | 
-<a href="/tickets.php?status=closed">View Closed Tickets</a> 
+<div class="btn-group">
+    <a href="/tickets.php?status=open" class="btn btn-default">View Opened Tickets</a>
+    <a href="/tickets.php?status=all" class="btn btn-default">View All Tickets</a>
+    <a href="/tickets.php?status=closed" class="btn btn-default">View Closed Tickets</a> 
+</div>
 
-<br />
+<a href="/create.php" class="btn btn-primary pull-right">Create Ticket</a>
 
-[ <a href="/create.php">Create Ticket</a> ]
+<div class="clear"></div>
 
-<table style="width:100%;" border="1">
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Queue #</th>
@@ -59,7 +61,7 @@ while ($ticket = $getTickets->fetch()) {
         <td>" . $ticket['rank'] . "</td>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td><a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a> (" . getStatus($ticket['status']) . ")</td>
+        <td>" . getStatus($ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
         <td>" . date("r", $ticket['date_created']) . "</td>
         <td>" . date("r", $ticket['date_updated']) . "</td>
         <td>TBD</td>

@@ -41,43 +41,46 @@ if (isset($_POST['create'])) {
 }
 ?>
 
-<h1>Blackhole <small>Create Ticket</small></h1>
+<h1>Create Ticket</h1>
 
-<a href="/tickets.php?status=open">View Opened Tickets</a> | 
-<a href="/tickets.php?status=all">View All Tickets</a> | 
-<a href="/tickets.php?status=closed">View Closed Tickets</a>
+<div class="btn-group">
+    <a href="/tickets.php?status=open" class="btn btn-default">View Opened Tickets</a>
+    <a href="/tickets.php?status=all" class="btn btn-default">View All Tickets</a>
+    <a href="/tickets.php?status=closed" class="btn btn-default">View Closed Tickets</a> 
+</div>
+
+<div class="clear"></div>
 
 <form action="" method="POST">
-    
-    <label>Your Name:
-        <input type="text" name="name" />
-    </label>
-    
-    <Br />
-    
-    <label>Subject:
-        <input type="text" name="subject" />
-    </label>
-    
-    <Br />
-    <label>Category:
-        <select name="category">
+	<div class="form-group">
+		<label for="name">Your Name:</label>
+		<input type="text" name="name" class="form-control" id="name" />
+	</div>
+	
+	<div class="form-group">
+		<label for="subject">Subject:</label>
+		<input type="text" name="subject" class="form-control" id="subject" />
+	</div>
+	
+	
+	<div class="form-group">
+		<label for="category">Category:</label>
+		<select name="category" class="form-control" id="category">
 <?php
 $categories = getCategories();
 foreach ($categories as $category)
-    echo "<option value='" . $category['category_id'] . "'>" . $category['name'] . "</option>" . PHP_EOL;
+	echo "<option value='" . $category['category_id'] . "'>" . $category['name'] . "</option>" . PHP_EOL;
 ?>
-        </select>
-    </label>
-    
-    <Br />
-    <label>Message:
-        <textarea name="message"></textarea>
-    </label>
-    
-    <Br />
-    <button type="submit" name="create">Create</button>
-    
+		</select>
+	</div>
+	
+	<div class="form-group">
+		<label for="message">Message:</label>
+		<textarea name="message" class="form-control" id="message"></textarea>
+	</div>
+	
+	<button type="submit" name="create" class="btn btn-primary">Create</button>
+
 </form>
 
 

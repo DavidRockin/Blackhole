@@ -57,3 +57,9 @@ footer {
     width: 50%; /* 6 columns */
   }
 }
+
+.clear {
+  clear: both;
+  display: block;
+  margin: 15px 0px;
+}

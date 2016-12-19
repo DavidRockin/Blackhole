@@ -56,7 +56,7 @@ if (isset($_POST['reply'])) {
 
 ?>
 
-<h1>Blackhole <small><?=htmlentities($ticket['subject'])?></small></h1>
+<h1><?=htmlentities($ticket['subject'])?></h1>
 
 <a href="/tickets.php?status=open">Return</a>
 
@@ -68,7 +68,6 @@ if (isset($_POST['reply'])) {
 
 <strong>Category: <?=$ticket['category_name']?></strong>
 
-<table style="width:100%;" border="1">
 <?php
 $getMessages = $dbh->prepare("
     SELECT *
@@ -81,38 +80,41 @@ $getMessages->execute([
 ]);
 
 while ($message = $getMessages->fetch()) {
-    echo "<tr>
-        <td>
-            " . htmlentities($message['author_name']) . "<br />"
-            . date("r", $message['date_created']) . "
-        </td>
-        <td>
-            " . htmlentities($message['message']) . "
-        </td>
-    </tr>";
+?>
+
+<div class="clear"></div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading"><?=htmlentities($message['author_name']) . " " . date("r", $message['date_created'])?></div>
+	<div class="panel-body">
+		<?=htmlentities($message['message'])?>
+	</div>
+</div>
+
+<?php
 }
 ?>
 
-</table>
+<div class="clear"></div>
 
-
-
-<form action="" method="POST">
-    
-    <label>Your Name:
-        <input type="text" name="name" />
-    </label>
-    
-    <Br />
-    <label>Message:
-        <textarea name="message"></textarea>
-    </label>
-    
-    <Br />
-    <button type="submit" name="reply">Reply</button>
-    
-</form>
-
+<div class="panel panel-info">
+	<div class="panel-heading">Reply to Ticket</div>
+	<div class="panel-body">
+		<form action="" method="POST">
+			<div class="form-group">
+				<label for="name">Your Name:</label>
+				<input type="text" name="name" class="form-control" id="name" />
+			</div>
+			
+			<div class="form-group">
+				<label for="message">Message:</label>
+				<textarea name="message" class="form-control" id="message"></textarea>
+			</div>
+			
+			<button type="submit" name="reply" class="btn btn-primary">Reply</button>
+		</form>
+	</div>
+</div>
 
 <?php
 Template::footer();
