@@ -1,6 +1,10 @@
 <?php
 include __DIR__ . "/library/core.php";
 
+use App\Template;
+
+Template::header("Ticket");
+
 if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
@@ -108,3 +112,8 @@ while ($message = $getMessages->fetch()) {
     <button type="submit" name="reply">Reply</button>
     
 </form>
+
+
+<?php
+Template::footer();
+

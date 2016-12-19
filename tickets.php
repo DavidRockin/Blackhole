@@ -1,6 +1,10 @@
 <?php
 include __DIR__ . "/library/core.php";
 
+use App\Template;
+
+Template::header("Tickets");
+
 $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 ?>
 
@@ -65,3 +69,7 @@ while ($ticket = $getTickets->fetch()) {
 ?>
     </tbody>
 </table>
+
+
+<?php
+Template::footer();

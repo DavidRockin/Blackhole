@@ -1,6 +1,10 @@
 <?php
 include __DIR__ . "/library/core.php";
 
+use App\Template;
+
+Template::header("Create Ticket");
+
 if (isset($_POST['create'])) {
     // TODO: add validation
     
@@ -75,3 +79,7 @@ foreach ($categories as $category)
     <button type="submit" name="create">Create</button>
     
 </form>
+
+
+<?php
+Template::footer();
