@@ -46,12 +46,13 @@ if (isset($_POST['reply'])) {
     // create message
     $createMessage = $dbh->prepare("
         INSERT INTO ticket_messages
-        VALUES (null, :ticketId, :name, UNIX_TIMESTAMP(NOW()), :message)
+        VALUES (null, :ticketId, :name, :userId, UNIX_TIMESTAMP(NOW()), :message)
     ");
     $createMessage->execute([
         ":ticketId" => $ticket['ticket_id'],
         ":name"     => trim($_POST['name']),
         ":message"  => trim($_POST['message']),
+        ":userId"   => \App\Auth::getUserId(),
     ]);
     
 	// update the ticket
@@ -68,10 +69,24 @@ if (isset($_POST['reply'])) {
 ?>
 
 <div class="row">
-	<div class="col-md-10">
+	<div class="col-md-8">
 		<h1 style="margin:0px;padding:0px"><?=htmlentities($ticket['subject'])?></h1>
 	</div>
-	<div class="col-md-2">
+	<div class="col-md-4">
+
+<?php
+if ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id'])) {
+?> 
+		<a href="?action=close&id=<?=$ticket['ticket_id']?>" class="btn btn-danger pull-right">Close Ticket</a>
+<?php
+}
+
+if ($user->rank === "1") {
+?> 
+		<a href="?action=merge&id=<?=$ticket['ticket_id']?>" class="btn btn-warning pull-right">Merge Ticket</a>
+<?php
+}
+?>
 		<a href="/tickets.php?status=open" class="btn btn-primary pull-right">&laquo; Return</a>
 	</div>
 </div>

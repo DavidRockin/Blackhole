@@ -13,12 +13,13 @@ if (isset($_POST['create'])) {
     // insert ticket info
     $createTicket = $dbh->prepare("
         INSERT INTO tickets
-        VALUES (NULL, :subject, :name, :category, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()), 0)
+        VALUES (NULL, :subject, :name, :userId, :category, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()), 0)
     ");
     $createTicket->execute([
         ":subject" => trim($_POST['subject']),
         ":name" => trim($_POST['name']),
         ":category" => intval($_POST['category']),
+        ":userId"   => \App\Auth::getUserId(),
     ]);
     
     // ticket id
@@ -27,12 +28,13 @@ if (isset($_POST['create'])) {
     // create message
     $createMessage = $dbh->prepare("
         INSERT INTO ticket_messages
-        VALUES (null, :ticketId, :name, UNIX_TIMESTAMP(NOW()), :message)
+        VALUES (null, :ticketId, :name, :userId, UNIX_TIMESTAMP(NOW()), :message)
     ");
     $createMessage->execute([
         ":ticketId" => $ticketId,
         ":name"     => trim($_POST['name']),
         ":message"  => trim($_POST['message']),
+        ":userId"   => \App\Auth::getUserId(),
     ]);
     
     
