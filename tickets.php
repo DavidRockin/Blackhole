@@ -35,7 +35,7 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
     <tbody>
 <?php
 $getTickets = $dbh->prepare("
-    SELECT t.*, q.rank
+    SELECT t.*, q.rank, c.name as category_name
     FROM tickets t
     LEFT JOIN (
         SELECT *
@@ -43,11 +43,13 @@ $getTickets = $dbh->prepare("
                 SELECT *, @rank := @rank + 1 as rank
                 FROM tickets, (SELECT @rank := 0) r
                 WHERE status = 0
-                ORDER BY date_created
+                ORDER BY date_updated
         ) tt
     ) q
     ON q.ticket_id = t.ticket_id
     " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
+    LEFT JOIN categories c
+    ON c.category_id = t.category_id
     ORDER BY ABS(t.date_updated) DESC
 ");
 
@@ -62,9 +64,9 @@ while ($ticket = $getTickets->fetch()) {
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
         <td>" . getStatus($ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
-        <td>" . date("r", $ticket['date_created']) . "</td>
-        <td>" . date("r", $ticket['date_updated']) . "</td>
-        <td>TBD</td>
+        <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
+        <td>" . \App\Format::getTimeElapsed($ticket['date_updated']) . "</td>
+        <td>" . $ticket['category_name'] . "</td>
     </tr>";
 }
 

@@ -16,4 +16,8 @@ $config['memes'] = [
 	"<em>&ldquo;Physics is like sex: Sure it might give some practical results, but that's not why we do it. &rdquo;</em> &ndash; Richard P. Feynman"
 ];
 
+// date formatting
+$config['dateFormatSimple']  = "F d, Y";
+$config['dateFormatComplex'] = "F d, Y H:i:s P";
+
 return $config;
