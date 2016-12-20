@@ -16,6 +16,7 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
             <th>Ticket ID</th>
             <th>Author</th>
             <th>Subject</th>
+            <th>Date Created</th>
             <th>Date Updated</th>
             <th>Category</th>
         </tr>
@@ -38,7 +39,8 @@ while ($ticket = $getTickets->fetch()) {
     echo "<tr>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td>" . htmlentities($ticket['subject']) . " (" . getStatus($ticket['status']) . ")</td>
+        <td><a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a> (" . getStatus($ticket['status']) . ")</td>
+        <td>" . date("r", $ticket['date_created']) . "</td>
         <td>" . date("r", $ticket['date_updated']) . "</td>
         <td>TBD</td>
     </tr>";
