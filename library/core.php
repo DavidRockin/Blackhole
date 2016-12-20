@@ -12,3 +12,5 @@ $config = include LIBDIR . "config/app.php";
 
 // initialize database connection
 $dbh    = new \App\Database($config);
+
+session_start();

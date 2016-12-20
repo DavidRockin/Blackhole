@@ -1,21 +1,33 @@
 <?php
 include __DIR__ . "/library/core.php";
 
+use App\Template;
+
+Template::header("Tickets");
+
 $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 ?>
 
-<h1>Blackhole</h1>
+<h1>View Tickets</h1>
 
-<a href="/tickets.php?status=open">View Opened Tickets</a> | 
-<a href="/tickets.php?status=all">View All Tickets</a> | 
-<a href="/tickets.php?status=closed">View Closed Tickets</a>
+<div class="btn-group">
+    <a href="/tickets.php?status=open" class="btn btn-default">View Opened Tickets</a>
+    <a href="/tickets.php?status=all" class="btn btn-default">View All Tickets</a>
+    <a href="/tickets.php?status=closed" class="btn btn-default">View Closed Tickets</a> 
+</div>
 
-<table style="width:100%;" border="1">
+<a href="/create.php" class="btn btn-primary pull-right">Create Ticket</a>
+
+<div class="clear"></div>
+
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
+            <th>Queue #</th>
             <th>Ticket ID</th>
             <th>Author</th>
             <th>Subject</th>
+            <th>Date Created</th>
             <th>Date Updated</th>
             <th>Category</th>
         </tr>
@@ -23,10 +35,22 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
     <tbody>
 <?php
 $getTickets = $dbh->prepare("
-    SELECT t.*
+    SELECT t.*, q.rank, c.name as category_name
     FROM tickets t
+    LEFT JOIN (
+        SELECT *
+        FROM (
+                SELECT *, @rank := @rank + 1 as rank
+                FROM tickets, (SELECT @rank := 0) r
+                WHERE status = 0
+                ORDER BY date_updated
+        ) tt
+    ) q
+    ON q.ticket_id = t.ticket_id
     " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
-    ORDER BY ABS(date_updated) DESC
+    LEFT JOIN categories c
+    ON c.category_id = t.category_id
+    ORDER BY ABS(t.date_updated) DESC
 ");
 
 if ($status !== "all")
@@ -36,14 +60,20 @@ $getTickets->execute();
 
 while ($ticket = $getTickets->fetch()) {
     echo "<tr>
+        <td>" . $ticket['rank'] . "</td>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td>" . htmlentities($ticket['subject']) . " (" . getStatus($ticket['status']) . ")</td>
-        <td>" . date("r", $ticket['date_updated']) . "</td>
-        <td>TBD</td>
+        <td>" . getStatus($ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
+        <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
+        <td>" . \App\Format::getTimeElapsed($ticket['date_updated']) . "</td>
+        <td>" . $ticket['category_name'] . "</td>
     </tr>";
 }
 
 ?>
     </tbody>
 </table>
+
+
+<?php
+Template::footer();
