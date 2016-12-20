@@ -47,9 +47,9 @@ $getTickets = $dbh->prepare("
         ) tt
     ) q
     ON q.ticket_id = t.ticket_id
-    " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
     LEFT JOIN categories c
     ON c.category_id = t.category_id
+    " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
     ORDER BY ABS(t.date_updated) DESC
 ");
 
