@@ -24,7 +24,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="/">BlackHole</a>
+				<a class="navbar-brand" href="/"><img src="/assets/images/Black-Hole-Logo.png" style="max-height:100%" /></a>
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-left">
