@@ -29,6 +29,17 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-left">
 					<li><a href="/tickets.php">View Tickets</a></li>
+<?php
+if (\App\Auth::isLoggedIn()) {
+?>
+					<li><a href="/logout.php">Logout</a></li>
+<?php
+} else {
+?>
+					<li><a href="/login.php">Login</a></li>
+<?php
+}
+?>
 				</ul>
 
 				<form class="navbar-form navbar-right" method="POST" action="/search.php">

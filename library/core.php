@@ -14,3 +14,6 @@ $config = include LIBDIR . "config/app.php";
 $dbh    = new \App\Database($config);
 
 session_start();
+
+// initialize the user object
+$user   = new \App\User($dbh, \App\Auth::getUserId());
