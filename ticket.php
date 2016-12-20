@@ -9,7 +9,7 @@ if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
 $getTicket = $dbh->prepare("
-    SELECT *, q.rank, c.name as category_name
+    SELECT t.*, q.rank, c.name as category_name
     FROM tickets t
     LEFT JOIN (
         SELECT *
@@ -35,10 +35,25 @@ if ($getTicket->rowCount() === 0) {
     exit;
 }
 
-$ticket = $getTicket->fetch();
+$ticket = $getTicket->fetch(\PDO::FETCH_ASSOC);
+
+if (isset($_GET['action'])) {
+	if ($_GET['action'] === "close" || ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
+		$updateTicket = $dbh->prepare("
+			UPDATE tickets
+			SET status = 1
+			WHERE ticket_id = :ticketId
+		");
+		$updateTicket->execute([
+			":ticketId" => $ticket['ticket_id'],
+		]);
+		
+		$ticket['status'] = 1;
+	}
+}
 
 
-if (isset($_POST['reply'])) {
+if (isset($_POST['reply']) && $ticket['status'] == 1) {
     // TODO: add validation
     
     $_SESSION['name'] = trim($_POST['name']);
@@ -95,10 +110,12 @@ if ($user->rank === "1") {
 
 <?php
 $getMessages = $dbh->prepare("
-    SELECT *
-    FROM ticket_messages
-    WHERE ticket_id = :ticketId
-    ORDER BY ABS(date_created);
+    SELECT tm.*, u.rank
+    FROM ticket_messages tm
+	LEFT JOIN users u
+	ON u.user_id = tm.author_id
+    WHERE tm.ticket_id = :ticketId
+    ORDER BY ABS(tm.date_created);
 ");
 $getMessages->execute([
     ":ticketId" => $ticket['ticket_id'],
@@ -109,7 +126,7 @@ while ($message = $getMessages->fetch()) {
 
 <div class="clear"></div>
 
-<div class="panel panel-primary">
+<div class="panel panel-<?=($message['rank'] === "1" ? "danger" : "primary")?>">
 	<div class="panel-heading"><?=htmlentities($message['author_name']) . " " . date("r", $message['date_created'])?></div>
 	<div class="panel-body">
 		<?=htmlentities($message['message'])?>
@@ -156,12 +173,21 @@ while ($message = $getMessages->fetch()) {
 			</div>
 			
 			<div class="col-md-3">
+				<strong>Status:</strong>
+				<?=getStatus($ticket['status'], " pull-right")?>
+			</div>
+			
+			<div class="col-md-3">
 				<strong>Average Response Time:</strong>
 				<span class="label label-primary pull-right">TBD</span>
 			</div>
 		</div>
 	</div>
 </div>
+
+<?php
+if ($ticket['status'] != 1) {
+?>
 
 <div class="clear"></div>
 
@@ -185,5 +211,9 @@ while ($message = $getMessages->fetch()) {
 </div>
 
 <?php
+
+}
+
+
 Template::footer();
 
