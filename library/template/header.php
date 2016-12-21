@@ -24,7 +24,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="/"><img src="/assets/images/Black-Hole-Logo.png" style="max-height:100%" /></a>
+				<a class="navbar-brand" href="/"><img src="/assets/images/Black-Hole-Logo-White.png" style="max-height:100%" /></a>
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-left">
@@ -42,9 +42,9 @@ if (\App\Auth::isLoggedIn()) {
 ?>
 				</ul>
 
-				<form class="navbar-form navbar-right" method="POST" action="/search.php">
+				<form class="navbar-form navbar-right" method="GET" action="/search.php">
 					<div class="input-group">
-						<input type="text" class="form-control" placeholder="Search..." />
+						<input type="text" class="form-control" name="q" placeholder="Search..." />
 						<span class="input-group-btn">
 							<button class="btn" type="button">&raquo;</button>
 						</span>
