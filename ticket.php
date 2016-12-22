@@ -221,7 +221,7 @@ if ($ticket['status'] != 1) {
 			
 			<div class="form-group">
 				<label for="message">Message:</label>
-				<textarea name="message" class="form-control" id="message"></textarea>
+				<textarea name="message" class="form-control" id="message" style="height:200px"></textarea>
 			</div>
 			
 			<button type="submit" name="reply" class="btn btn-primary">Reply</button>

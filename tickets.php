@@ -20,6 +20,7 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
 
 <div class="clear"></div>
 
+<div class="table-responsive">
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
@@ -80,7 +81,7 @@ while ($ticket = $getTickets->fetch()) {
 ?>
     </tbody>
 </table>
-
+</div>
 
 <?php
 Template::footer();

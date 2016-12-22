@@ -57,6 +57,7 @@ if (isset($_GET['q']) && !empty($_GET['q'])) {
 
 <div class="clear"></div>
 
+<div class="table-responsive">
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
@@ -117,7 +118,7 @@ while ($ticket = $getTickets->fetch()) {
 ?>
     </tbody>
 </table>
-
+</div>
 
 <?php
 }
