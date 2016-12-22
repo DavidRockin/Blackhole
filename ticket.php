@@ -9,7 +9,7 @@ if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
 $getTicket = $dbh->prepare("
-    SELECT t.*, q.rank, c.name as category_name
+    SELECT t.*, q.rank, c.name as category_name, au.users
     FROM tickets t
     LEFT JOIN (
         SELECT *
@@ -24,6 +24,13 @@ $getTicket = $dbh->prepare("
     ON q.ticket_id = t.ticket_id
     LEFT JOIN categories c
     ON c.category_id = t.category_id
+    LEFT JOIN (
+        SELECT GROUP_CONCAT(name) AS users, active_ticket
+        FROM users
+        WHERE date_seen > UNIX_TIMESTAMP(NOW()) - 60*15
+        GROUP BY active_ticket
+    ) au
+    ON au.active_ticket = t.ticket_id
     WHERE t.ticket_id = :ticketId
 ");
 $getTicket->execute([
@@ -36,6 +43,10 @@ if ($getTicket->rowCount() === 0) {
 }
 
 $ticket = $getTicket->fetch(\PDO::FETCH_ASSOC);
+
+// if the user is logged in, set their active ticket
+if (\App\Auth::isLoggedIn())
+	$user->activeTicket = $ticket['ticket_id'];
 
 if (isset($_GET['action'])) {
 	if ($_GET['action'] === "close" || ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
@@ -109,6 +120,14 @@ if ($user->rank === "1") {
 <div class="clear"></div>
 
 <?php
+if (!empty($ticket['users'])) {
+	echo "<div class='alert alert-info'>
+		This ticket is currently being reviewed.
+	</div>
+	<div class='clear'></div>";
+	
+}
+
 $getMessages = $dbh->prepare("
     SELECT tm.*, u.rank
     FROM ticket_messages tm
@@ -174,7 +193,7 @@ while ($message = $getMessages->fetch()) {
 			
 			<div class="col-md-3">
 				<strong>Status:</strong>
-				<?=getStatus($ticket['status'], " pull-right")?>
+				<?=getStatus(!empty($ticket['users']) ? 2 : $ticket['status'], " pull-right")?>
 			</div>
 			
 			<div class="col-md-3">

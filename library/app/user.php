@@ -7,6 +7,8 @@ class User
 	
 	private $dbh;
 	
+	public $activeTicket = null;
+	
 	protected $data = [];
 	
 	public function __construct($dbh, $userId = null)
@@ -15,6 +17,11 @@ class User
 		
 		if ($userId !== null)
 			$this->data = $this->loadUser($userId);
+	}
+	
+	public function __destruct()
+	{
+		$this->update();
 	}
 	
 	/**
@@ -37,6 +44,22 @@ class User
 		]);
 		
 		return $getUser->fetch(\PDO::FETCH_ASSOC);
+	}
+	
+	public function update()
+	{
+		if (empty($this->data))
+			return;
+		
+		$updateUser = $this->dbh->prepare("
+			UPDATE users
+			SET date_seen = UNIX_TIMESTAMP(NOW()), active_ticket = :ticket
+			WHERE user_id = :userId
+		");
+		$updateUser->execute([
+			":ticket" => $this->activeTicket,
+			":userId" => $this->user_id,
+		]);
 	}
 	
 }
