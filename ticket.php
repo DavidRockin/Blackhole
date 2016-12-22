@@ -64,7 +64,7 @@ if (isset($_GET['action'])) {
 }
 
 
-if (isset($_POST['reply']) && $ticket['status'] == 1) {
+if (isset($_POST['reply']) && $ticket['status'] == 0) {
     // TODO: add validation
     
     $_SESSION['name'] = trim($_POST['name']);
@@ -89,6 +89,9 @@ if (isset($_POST['reply']) && $ticket['status'] == 1) {
 	$updateTicket->execute([
 		":ticketId" => $ticket['ticket_id'],
 	]);
+	
+	header("Location: /ticket.php?id=" . $ticket['ticket_id']);
+	exit;
 	
 }
 
@@ -188,7 +191,7 @@ while ($message = $getMessages->fetch()) {
 		<div class="row">
 			<div class="col-md-3">
 				<strong>Position in Queue:</strong>
-				<span class="label label-primary pull-right"><?=number_format($getMessages->rowCount() - 1)?></span>
+				<span class="label label-primary pull-right"><?=number_format($ticket['rank'])?></span>
 			</div>
 			
 			<div class="col-md-3">

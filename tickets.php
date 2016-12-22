@@ -66,18 +66,25 @@ if ($status !== "all")
 
 $getTickets->execute();
 
-while ($ticket = $getTickets->fetch()) {
-    echo "<tr" . (!empty($ticket['users']) ? " class='info'" : "") . ">
-        <td>" . $ticket['rank'] . "</td>
-        <td>" . $ticket['ticket_id'] . "</td>
-        <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td>" . getStatus(!empty($ticket['users']) ? 2 : $ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
-        <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
-        <td>" . \App\Format::getTimeElapsed($ticket['date_updated']) . "</td>
-        <td>" . $ticket['category_name'] . "</td>
+if ($getTickets->rowCount() !== 0) {
+    while ($ticket = $getTickets->fetch()) {
+        echo "<tr" . (!empty($ticket['users']) ? " class='info'" : "") . ">
+            <td>" . $ticket['rank'] . "</td>
+            <td>" . $ticket['ticket_id'] . "</td>
+            <td>" . htmlentities($ticket['author_name']) . "</td>
+            <td>" . getStatus(!empty($ticket['users']) ? 2 : $ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
+            <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
+            <td>" . \App\Format::getTimeElapsed($ticket['date_updated']) . "</td>
+            <td>" . $ticket['category_name'] . "</td>
+        </tr>";
+    }
+} else {
+    echo "<tr>
+        <td colspan='10'>
+            There are no tickets
+        </td>
     </tr>";
 }
-
 ?>
     </tbody>
 </table>
