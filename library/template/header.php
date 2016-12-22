@@ -46,7 +46,7 @@ if (\App\Auth::isLoggedIn()) {
 					<div class="input-group">
 						<input type="text" class="form-control" name="q" placeholder="Search..." />
 						<span class="input-group-btn">
-							<button class="btn" type="button">&raquo;</button>
+							<button class="btn" type="submit">&raquo;</button>
 						</span>
 					</div>
 				</form>
