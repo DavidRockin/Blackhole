@@ -11,6 +11,7 @@ $memes = $config['memes'];
 			<div class="row">
 				<div class="col-md-9" style="padding-top:60px">
 					<p>&copy; <?=date("Y")?> Tkachuk Tech &ndash; <?=$memes[rand() % count($memes)]?></p>
+					<p><a href="https://github.com/DavidRockin/Blackhole" target="_blank">View source code on Github</a></p>
 				</div>
 				<div class="col-md-3">
 					<img src="/assets/images/Black-Hole.png" class="pull-right" style="max-width:100%" />

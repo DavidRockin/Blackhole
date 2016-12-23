@@ -9,8 +9,9 @@ if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
 $getTicket = $dbh->prepare("
-    SELECT t.*, q.rank, c.name as category_name, au.users
+    SELECT t.*, q.rank, c.name as category_name, au.users, AVG(r.response_seconds) avg_response
     FROM tickets t
+    
     LEFT JOIN (
         SELECT *
         FROM (
@@ -22,8 +23,10 @@ $getTicket = $dbh->prepare("
         WHERE t.ticket_id = :ticketId
     ) q
     ON q.ticket_id = t.ticket_id
+    
     LEFT JOIN categories c
     ON c.category_id = t.category_id
+    
     LEFT JOIN (
         SELECT GROUP_CONCAT(name) AS users, active_ticket
         FROM users
@@ -31,6 +34,21 @@ $getTicket = $dbh->prepare("
         GROUP BY active_ticket
     ) au
     ON au.active_ticket = t.ticket_id
+    
+	LEFT JOIN (
+		SELECT tm.ticket_id, (tm.date_created - t.date_created) AS response_seconds
+		FROM
+			tickets t
+		JOIN
+			ticket_messages tm
+		ON
+			t.ticket_id = tm.ticket_id
+		WHERE
+			t.ticket_id = :ticketId
+		) AS r
+	ON
+	t.ticket_id = r.ticket_id
+    
     WHERE t.ticket_id = :ticketId
 ");
 $getTicket->execute([
@@ -199,9 +217,9 @@ while ($message = $getMessages->fetch()) {
 				<?=getStatus(!empty($ticket['users']) ? 2 : $ticket['status'], " pull-right")?>
 			</div>
 			
-			<div class="col-md-3">
+			<div class="col-md-6">
 				<strong>Average Response Time:</strong>
-				<span class="label label-primary pull-right">TBD</span>
+				<span class="label label-primary pull-right"><?=\App\Format::complexTimeElapsed($ticket['avg_response'])?></span>
 			</div>
 		</div>
 	</div>
