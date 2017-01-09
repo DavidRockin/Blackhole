@@ -1,8 +1,12 @@
 # Blackhole
-A simple ticketing system for Mr. H 
+A simple ticketing system for Mr. H.
 
 # Why?
 Because I can, also memes.
+
+# Buy why?
+So that people can take it apart and figure out how it works. Something simple and easy to use and work with.
+Caching not included, some assembly required. 
 
 # Installation
 1. Setup LAMP stack
@@ -13,7 +17,6 @@ Because I can, also memes.
 
 # Todo
 * Database-based sessions
-* Authentication (for closing tickets, etc)
-* Lock, close, merge tickets
+* Merging tickets
 * Notifications?
 * Attachments
