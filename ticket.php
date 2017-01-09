@@ -87,6 +87,8 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
     
     $_SESSION['name'] = trim($_POST['name']);
     
+    //var_dump($_FILES);
+    
     // create message
     $createMessage = $dbh->prepare("
         INSERT INTO ticket_messages
@@ -234,7 +236,7 @@ if ($ticket['status'] != 1) {
 <div class="panel panel-info">
 	<div class="panel-heading">Reply to Ticket</div>
 	<div class="panel-body">
-		<form action="" method="POST">
+		<form action="/ticket.php?id=<?=$ticket['ticket_id']?>" method="POST" <?php /*class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data"*/ ?>>
 			<div class="form-group">
 				<label for="name">Your Name:</label>
 				<input type="text" name="name" class="form-control" id="name" value="<?=isset($_SESSION['name']) ? htmlentities($_SESSION['name']) : ""?>" />
@@ -244,7 +246,12 @@ if ($ticket['status'] != 1) {
 				<label for="message">Message:</label>
 				<textarea name="message" class="form-control" id="message" style="height:200px"></textarea>
 			</div>
-			
+			<!--
+			<div class="dropzone-previews"></div>
+			<div class="fallback">
+				<input name="file" type="file" multiple />
+			</div>
+			-->
 			<button type="submit" name="reply" class="btn btn-primary">Reply</button>
 		</form>
 	</div>

@@ -12,6 +12,7 @@
 	<link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet" />
 	<link href="/assets/css/styles.css" rel="stylesheet" />
+	<link href="/assets/css/dropzone.css" rel="stylesheet" />
 </head>
 
 <body>
