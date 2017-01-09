@@ -108,7 +108,8 @@ while ($ticket = $getTickets->fetch()) {
         <td>" . $ticket['rank'] . "</td>
         <td>" . $ticket['ticket_id'] . "</td>
         <td>" . htmlentities($ticket['author_name']) . "</td>
-        <td>" . getStatus($ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . htmlentities($ticket['subject']) . "</a></td>
+        <td>" . getStatus($ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . 
+    		(empty($ticket['subject']) ? "<em>(Untitled Subject)</em>" : htmlentities($ticket['subject'])). "</a></td>
         <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
         <td>" . \App\Format::getTimeElapsed($ticket['date_updated']) . "</td>
         <td>" . $ticket['category_name'] . "</td>

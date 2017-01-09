@@ -119,7 +119,7 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
 
 <div class="row">
 	<div class="col-md-8">
-		<h1 style="margin:0px;padding:0px"><?=htmlentities($ticket['subject'])?></h1>
+		<h1 style="margin:0px;padding:0px"><?=(empty($ticket['subject']) ? "<em>(Untitled Subject)</em>" : htmlentities($ticket['subject']))?></h1>
 	</div>
 	<div class="col-md-4">
 
