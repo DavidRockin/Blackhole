@@ -5,6 +5,8 @@ use App\Template;
 
 Template::header("Ticket");
 
+$errors = [];
+
 if (isset($_GET['id']))
     $id = intval($_GET['id']);
 
@@ -83,36 +85,49 @@ if (isset($_GET['action'])) {
 
 
 if (isset($_POST['reply']) && $ticket['status'] == 0) {
-    // TODO: add validation
+    if (isset($_POST['name']) && !empty($_POST['name'])) {
+    	$name = trim($_POST['name']);
+    	$_SESSION['name'] = $name;
+    } else {
+    	$errors[] = "Please specify a name";
+    }
     
-    $_SESSION['name'] = trim($_POST['name']);
+    if (isset($_POST['message']) && !empty($_POST['message'])) {
+    	$message = trim($_POST['message']);
+    } else {
+    	$errors[] = "Please specify a message";
+    }
     
+    // TODO file upload validation here ...
     //var_dump($_FILES);
     
-    // create message
-    $createMessage = $dbh->prepare("
-        INSERT INTO ticket_messages
-        VALUES (null, :ticketId, :name, :userId, UNIX_TIMESTAMP(NOW()), :message)
-    ");
-    $createMessage->execute([
-        ":ticketId" => $ticket['ticket_id'],
-        ":name"     => trim($_POST['name']),
-        ":message"  => trim($_POST['message']),
-        ":userId"   => \App\Auth::getUserId(),
-    ]);
-    
-	// update the ticket
-	$updateTicket = $dbh->prepare("
-		UPDATE tickets SET date_updated = UNIX_TIMESTAMP(NOW())
-		WHERE ticket_id = :ticketId
-	");
-	$updateTicket->execute([
-		":ticketId" => $ticket['ticket_id'],
-	]);
-	
-	header("Location: /ticket.php?id=" . $ticket['ticket_id']);
-	exit;
-	
+    if (empty($errors)) {
+	    // create message
+	    $createMessage = $dbh->prepare("
+	        INSERT INTO ticket_messages
+	        VALUES (null, :ticketId, :name, :userId, UNIX_TIMESTAMP(NOW()), :message)
+	    ");
+	    $createMessage->execute([
+	        ":ticketId" => $ticket['ticket_id'],
+	        ":name"     => $name,
+	        ":message"  => $message,
+	        ":userId"   => \App\Auth::getUserId(),
+	    ]);
+	    
+	    $messageId = $dbh->lastInsertId();
+	    
+		// update the ticket
+		$updateTicket = $dbh->prepare("
+			UPDATE tickets SET date_updated = UNIX_TIMESTAMP(NOW())
+			WHERE ticket_id = :ticketId
+		");
+		$updateTicket->execute([
+			":ticketId" => $ticket['ticket_id'],
+		]);
+		
+		header("Location: /ticket.php?id=" . $ticket['ticket_id'] . "#msg" . $messageId);
+		exit;
+    }
 }
 
 ?>
@@ -168,7 +183,7 @@ while ($message = $getMessages->fetch()) {
 
 <div class="clear"></div>
 
-<div class="panel panel-<?=($message['rank'] === "1" ? "danger" : "primary")?>">
+<div class="panel panel-<?=($message['rank'] === "1" ? "danger" : "primary")?>" id="msg<?=$message['message_id']?>">
 	<div class="panel-heading"><?=htmlentities($message['author_name']) . " " . date("r", $message['date_created'])?></div>
 	<div class="panel-body">
 		<?=htmlentities($message['message'])?>
@@ -233,13 +248,21 @@ if ($ticket['status'] != 1) {
 
 <div class="clear"></div>
 
-<div class="panel panel-info">
+<?php
+	if (!empty($errors)) {
+		echo "<div class='alert alert-danger'>
+			<strong>An error has occurred!</strong> " . $errors[0] .
+		"</div>";
+	}
+?>
+
+<div class="panel panel-info" id="reply">
 	<div class="panel-heading">Reply to Ticket</div>
 	<div class="panel-body">
-		<form action="/ticket.php?id=<?=$ticket['ticket_id']?>" method="POST" <?php /*class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data"*/ ?>>
+		<form action="/ticket.php?id=<?=$ticket['ticket_id']?>#reply" method="POST" <?php /*class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data"*/ ?>>
 			<div class="form-group">
 				<label for="name">Your Name:</label>
-				<input type="text" name="name" class="form-control" id="name" value="<?=isset($_SESSION['name']) ? htmlentities($_SESSION['name']) : ""?>" />
+				<input type="text" name="name" class="form-control" id="name" value="<?=htmlentities(isset($_SESSION['name']) ? $_SESSION['name'] : (isset($_POST['name']) ? trim($_POST['name']) : ""))?>" />
 			</div>
 			
 			<div class="form-group">
