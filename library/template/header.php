@@ -33,6 +33,7 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav navbar-left">
 					<li><a href="/tickets.php">View Tickets</a></li>
+					<li><a href="/create.php">Create Ticket</a></li>
 <?php
 if (\App\Auth::isLoggedIn()) {
 ?>
