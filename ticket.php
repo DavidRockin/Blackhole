@@ -285,5 +285,15 @@ if ($ticket['status'] != 1) {
 }
 
 
+if (strcasecmp($ticket['author_name'], "MrH") === 0 || strcasecmp($ticket['author_name'], "Humpartzoomian") === 0) {
+
+?>
+
+<script type="text/javascript" src="/assets/js/meem.js"></script>
+
+
+<?php
+}
+
 Template::footer();
 

@@ -71,7 +71,9 @@ if ($getTickets->rowCount() !== 0) {
         echo "<tr" . (!empty($ticket['users']) ? " class='info'" : "") . ">
             <td>" . $ticket['rank'] . "</td>
             <td>" . $ticket['ticket_id'] . "</td>
-            <td>" . htmlentities($ticket['author_name']) . "</td>
+            <td>" . htmlentities($ticket['author_name']) .
+                    (strcasecmp($ticket['author_name'], "MrH") === 0 ||
+                     strcasecmp($ticket['author_name'], "Humpartzoomian") === 0 ? "<img src='/assets/images/ICON.png' width='23' height='23' />" : "") . "</td>
             <td>" . getStatus(!empty($ticket['users']) ? 2 : $ticket['status']) . " <a href='/ticket.php?id=" . $ticket['ticket_id'] . "'>" . 
                     (empty($ticket['subject']) ? "<em>(Untitled Subject)</em>" : htmlentities($ticket['subject'])) . "</a></td>
             <td>" . \App\Format::getTimeElapsed($ticket['date_created']) . "</td>
