@@ -9,6 +9,9 @@
 	
 	<title><?=$title?></title>
 	
+	<link rel='shortcut icon' type='image/x-icon' href='/favicon.ico'/>
+	<link rel="apple-touch-icon" sizes="64x64" href="/assets/images/ICON.png">
+	
 	<link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet" />
 	<link href="/assets/css/styles.css" rel="stylesheet" />
