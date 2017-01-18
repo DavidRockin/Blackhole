@@ -29,6 +29,6 @@ $memes = $config['memes'];
 	<script src="/assets/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/assets/js/dropzone.js"></script>
 	<script src="/assets/js/offcanvas.js"></script>
-	<script src="/assets/js/main.js"></script>
+	<script src="/assets/js/main.js?<?=time()?>"></script>
 </body>
 </html>
