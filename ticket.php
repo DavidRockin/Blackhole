@@ -69,7 +69,7 @@ if (\App\Auth::isLoggedIn())
 	$user->activeTicket = $ticket['ticket_id'];
 
 if (isset($_GET['action'])) {
-	if ($_GET['action'] === "close" || ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
+	if ($_GET['action'] === "close" && ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
 		$updateTicket = $dbh->prepare("
 			UPDATE tickets
 			SET status = 1
@@ -81,6 +81,27 @@ if (isset($_GET['action'])) {
 		
 		$ticket['status'] = 1;
 	}
+	else if ($_GET['action'] === "delete" && ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
+		$deleteTicket = $dbh->prepare("DELETE FROM tickets WHERE ticket_id = :ticketId");
+		$deleteTicket->execute([":ticketId" => $ticket['ticket_id']]);
+		header("Location: /tickets.php");
+		exit;
+	}
+        else if ($_GET['action'] === "merge" && isset($_GET['mergeId']) && ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id']))) {
+                // we should probably be checking the ticket if it exists
+		$mergeMessages = $dbh->prepare("UPDATE ticket_messages SET ticket_id = :ticketId WHERE ticket_id = :oldId");
+		$mergeMessages->execute([
+			":ticketId" => intval($_GET['mergeId']),
+			":oldId"    => $ticket['ticket_id'],
+		]);
+
+		$deleteTicket = $dbh->prepare("DELETE FROM tickets WHERE ticket_id = :ticketId");
+                $deleteTicket->execute([":ticketId" => $ticket['ticket_id']]);
+
+                header("Location: /ticket.php?id=" . intval($_GET['mergeId']));
+                exit;
+        }
+
 }
 
 
@@ -142,12 +163,13 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
 if ($user->rank === "1" || (\App\Auth::isLoggedIn() && \App\Auth::getUserId() === $ticket['user_id'])) {
 ?> 
 		<a href="?action=close&id=<?=$ticket['ticket_id']?>" class="btn btn-danger pull-right">Close Ticket</a>
+                <a href="?action=delete&id=<?=$ticket['ticket_id']?>" class="btn btn-danger pull-right" onclick="return confirm('Are you sure you would like to delete the ticket?');">Delete Ticket</a>
 <?php
 }
 
 if ($user->rank === "1") {
 ?> 
-		<a href="?action=merge&id=<?=$ticket['ticket_id']?>" class="btn btn-warning pull-right">Merge Ticket</a>
+		<a href="?action=merge&id=<?=$ticket['ticket_id']?>" class="btn btn-warning pull-right merge">Merge Ticket</a>
 <?php
 }
 ?>

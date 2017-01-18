@@ -4,11 +4,11 @@ $config = [];
 
 // production server
 if (gethostname() === "server") {
-	$config['dsn']  = "mysql://host=localhost;port=3306;dbname=blackhole;unix_socket=/var/run/mariadb/mariadb.sock";
+	$config['dsn']  = "mysql:host=127.0.0.1;port=3306;dbname=blackhole"; //;unix_socket=/var/run/mariadb/mariadb.sock";
 	$config['user'] = "blackhole";
 	$config['pass'] = "53cur3p455w0rd69!";
 } else {
-	$config['dsn']  = "mysql://host=localhost;port=3306;dbname=blackhole";
+	$config['dsn']  = "mysql:host=127.0.0.1;port=3306;dbname=blackhole";
 	$config['user'] = "root";
 	$config['pass'] = "";
 }
