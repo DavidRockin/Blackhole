@@ -1,3 +1,6 @@
+<?php
+global $user;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +39,11 @@
 					<li><a href="/create.php">Create Ticket</a></li>
 <?php
 if (\App\Auth::isLoggedIn()) {
+	if ($user->rank === "1") {
+		echo "<li><a href='/admin.php'>Administration</a></li>";
+	}
 ?>
+					<li><a href="/account.php">My Account</a></li>
 					<li><a href="/logout.php">Logout</a></li>
 <?php
 } else {
