@@ -6,6 +6,9 @@ use App\Template;
 Template::header("Tickets");
 
 $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
+
+$page   = (isset($_GET['page']) && ctype_digit($_GET['page']) && $_GET['page'] > 0 ? intval($_GET['page']) : 1);
+$offset = ($page - 1) * $config['maxTickets'];
 ?>
 
 <h1>View Tickets</h1>
@@ -36,7 +39,7 @@ $status = isset($_GET['status']) ? strtolower(trim($_GET['status'])) : "all";
     <tbody>
 <?php
 $getTickets = $dbh->prepare("
-    SELECT t.*, q.rank, c.name as category_name, au.users
+    SELECT SQL_CALC_FOUND_ROWS t.*, q.rank, c.name as category_name, au.users
     FROM tickets t
     LEFT JOIN (
         SELECT *
@@ -59,10 +62,14 @@ $getTickets = $dbh->prepare("
     ON au.active_ticket = t.ticket_id
     " . ($status !== "all" ? "WHERE t.status = :status" : "") . "
     ORDER BY ABS(t.date_updated) DESC
+    LIMIT :page, :max
 ");
 
 if ($status !== "all")
     $getTickets->bindValue(":status", ($status === "closed" ? 1 : 0));
+
+$getTickets->bindValue(":page", $offset,               \PDO::PARAM_INT);
+$getTickets->bindValue(":max",  $config['maxTickets'], \PDO::PARAM_INT);
 
 $getTickets->execute();
 
@@ -92,6 +99,22 @@ if ($getTickets->rowCount() !== 0) {
     </tbody>
 </table>
 </div>
+
+<center>
+<?php
+$totalTickets = $dbh->query("SELECT FOUND_ROWS()")->fetchColumn(0);
+
+echo sprintf("<strong>Displaying %d of %d tickets</strong>", $getTickets->rowCount(), $totalTickets);
+
+$pagination = new \App\Pagination();
+$pagination->setTotalResults($totalTickets);
+$pagination->setResultsPerPage($config['maxTickets']);
+$pagination->setCurrentPage($page);
+$pagination->setUrl("?page=%d" . (isset($_GET['status']) ? "&status=" . htmlentities($_GET['status'])  : ""));
+
+echo $pagination->render();
+?>
+</center>
 
 <?php
 Template::footer();

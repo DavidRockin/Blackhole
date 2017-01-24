@@ -51,4 +51,7 @@ $config['memes'] = [
 $config['dateFormatSimple']  = "F d, Y";
 $config['dateFormatComplex'] = "F d, Y H:i:s P";
 
+// pagination
+$config['maxTickets']        = 20;
+
 return $config;
