@@ -151,7 +151,17 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
     }
 }
 
+if (isset($_SESSION['q'])) {
+	echo "<div class='alert alert-info'>Your ticket has been created and will be reviewed shortly. In the meantime, checkout <a href='http://www.jibjab.com/view/h7bWYhG_QT2NUCsb5tHMqA' target='_blank'>Mr. H's dance moves!</a></div>";
+	unset($_SESSION['q']);
+}
+
+if (intval($ticket['ticket_id']) % 10 === 0) {
+	echo "<div class='alert alert-info'>THE " . intval($ticket['ticket_id']) . "th TICKET!!! Woo</div>";
+}
+
 ?>
+
 
 <div class="row">
 	<div class="col-md-8">
@@ -315,6 +325,8 @@ if (strcasecmp($ticket['author_name'], "MrH") === 0 || strcasecmp($ticket['autho
 
 
 <?php
+} elseif ( intval($ticket['ticket_id']) % 10 === 0) {
+	echo '<script type="text/javascript" src="/assets/js/meem2.js"></script>';
 }
 
 Template::footer();

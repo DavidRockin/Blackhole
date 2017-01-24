@@ -63,6 +63,8 @@ if (isset($_POST['create'])) {
 	        ":userId"   => \App\Auth::getUserId(),
 	    ]);
 	    
+
+		$_SESSION['q'] = true;
 	    
 	    // redirect to ticket page
 	    header("Location: /ticket.php?id=" . $ticketId);
