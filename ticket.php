@@ -156,7 +156,7 @@ if (isset($_SESSION['q'])) {
 	unset($_SESSION['q']);
 }
 
-if (intval($ticket['ticket_id']) % 10 === 0) {
+if (intval($ticket['ticket_id']) % 100 === 0) {
 	echo "<div class='alert alert-info'>THE " . intval($ticket['ticket_id']) . "th TICKET!!! Woo</div>";
 }
 
@@ -325,7 +325,7 @@ if (strcasecmp($ticket['author_name'], "MrH") === 0 || strcasecmp($ticket['autho
 
 
 <?php
-} elseif ( intval($ticket['ticket_id']) % 10 === 0) {
+} elseif ( intval($ticket['ticket_id']) % 100 === 0) {
 	echo '<script type="text/javascript" src="/assets/js/meem2.js"></script>';
 }
 
