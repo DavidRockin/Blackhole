@@ -1,0 +1,18 @@
+# remove un-needed files
+*.log
+*.tmp
+nbproject/
+certs/
+logs/
+tmp/
+.sass-cache/
+target/
+backups/
+uploads/
+
+# windows files
+desktop.ini
+
+# keep these files
+!.htaccess
+!.gitkeep
