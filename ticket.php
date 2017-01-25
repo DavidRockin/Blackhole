@@ -104,7 +104,6 @@ if (isset($_GET['action'])) {
 
 }
 
-
 if (isset($_POST['reply']) && $ticket['status'] == 0) {
     if (isset($_POST['name']) && !empty($_POST['name'])) {
     	$name = trim($_POST['name']);
@@ -118,10 +117,7 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
     } else {
     	$errors[] = "Please specify a message";
     }
-    
-    // TODO file upload validation here ...
-    //var_dump($_FILES);
-    
+
     if (empty($errors)) {
 	    // create message
 	    $createMessage = $dbh->prepare("
@@ -146,6 +142,29 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
 			":ticketId" => $ticket['ticket_id'],
 		]);
 		
+		if (true || !empty($_FILES) && !empty($_FILES['file'])) {
+			for ($i = 0; $i < count($_FILES['file']['name']); ++$i) {
+				try {
+					$ext      = explode(".", $_FILES['file']['name'][$i]);
+					$fileName = md5(microtime() . uniqid() . $_FILES['file']['name'][$i]) . (count($ext) > 0 ? "." . $ext[count($ext) - 1] : "");
+
+					$logFile = $dbh->prepare("INSERT INTO message_attachments VALUES(NULL, :messageId, :type, :name, :file, :ip, :size);");
+					$logFile->execute([
+						":messageId" => $messageId,
+						":type"      => $_FILES['file']['type'][$i],
+						":name"      => $_FILES['file']['name'][$i],
+						":file"      => $fileName,
+						":ip"        => $_SERVER['REMOTE_ADDR'],
+						":size"      => $_FILES['file']['size'][$i],
+					]);
+
+					move_uploaded_file($_FILES['file']['tmp_name'][$i], __DIR__ . "/uploads/" . $fileName);
+				} catch (\Exception $ex) {
+					// ...
+				}
+			}
+		}
+
 		header("Location: /ticket.php?id=" . $ticket['ticket_id'] . "#msg" . $messageId);
 		exit;
     }
@@ -199,12 +218,15 @@ if (!empty($ticket['users'])) {
 }
 
 $getMessages = $dbh->prepare("
-    SELECT tm.*, u.rank
-    FROM ticket_messages tm
+	SELECT tm.*, u.rank, GROUP_CONCAT(ma.`file`) file_files, GROUP_CONCAT(ma.name) file_names, GROUP_CONCAT(ma.type) file_types
+	FROM ticket_messages tm
 	LEFT JOIN users u
 	ON u.user_id = tm.author_id
-    WHERE tm.ticket_id = :ticketId
-    ORDER BY ABS(tm.date_created);
+	LEFT JOIN message_attachments ma
+	ON ma.message_id = tm.message_id
+	WHERE tm.ticket_id = :ticketId
+	GROUP BY tm.message_id
+	ORDER BY ABS(tm.date_created)
 ");
 $getMessages->execute([
     ":ticketId" => $ticket['ticket_id'],
@@ -220,6 +242,21 @@ while ($message = $getMessages->fetch()) {
 	<div class="panel-body">
 		<?=htmlentities($message['message'])?>
 	</div>
+<?php if (!empty($message['file_files'])) { ?>
+	<div class="panel-body">
+<?php
+$files = explode(",", $message['file_files']);
+$names = explode(",", $message['file_names']);
+$types = explode(",", $message['file_types']);
+foreach ($files as $k => $file) {
+	echo "<a href='/uploads/" . $file ."' target='_blank'>" . 
+		(in_array($types[$k], ["image/png","image/jpeg","image/jpg","image/gif"]) ? "<img src='/uploads/" . $file . "' style='max-width:300px;max-height:300px;' />" : 
+			"View " . (isset($names[$k]) ? $names[$k] : "attachment")
+		) . "</a> ";
+}
+?>
+	</div>
+<?php } ?>
 </div>
 
 <?php
@@ -291,7 +328,8 @@ if ($ticket['status'] != 1) {
 <div class="panel panel-info" id="reply">
 	<div class="panel-heading">Reply to Ticket</div>
 	<div class="panel-body">
-		<form action="/ticket.php?id=<?=$ticket['ticket_id']?>#reply" method="POST" <?php /*class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data"*/ ?>>
+		<form action="/ticket.php?id=<?=$ticket['ticket_id']?>#reply" method="POST" class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data">
+			<input type="hidden" name="reply" value="this-is-a-hack" />
 			<div class="form-group">
 				<label for="name">Your Name:</label>
 				<input type="text" name="name" class="form-control" id="name" value="<?=htmlentities(isset($_SESSION['name']) ? $_SESSION['name'] : (isset($_POST['name']) ? trim($_POST['name']) : ""))?>" />
@@ -301,13 +339,11 @@ if ($ticket['status'] != 1) {
 				<label for="message">Message:</label>
 				<textarea name="message" class="form-control" id="message" style="height:200px"></textarea>
 			</div>
-			<!--
 			<div class="dropzone-previews"></div>
 			<div class="fallback">
 				<input name="file" type="file" multiple />
 			</div>
-			-->
-			<button type="submit" name="reply" class="btn btn-primary">Reply</button>
+			<button type="submit" class="btn btn-primary">Reply</button>
 		</form>
 	</div>
 </div>
