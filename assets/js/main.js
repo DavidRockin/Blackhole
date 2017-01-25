@@ -33,10 +33,10 @@ Dropzone.options.dropzone = { // The camelized version of the ID of the form ele
       e.stopPropagation();
 
     	console.log("upload");
-		if (myDropzone.getQueuedFiles().length > 0) {                        
-		   myDropzone.processQueue();  
-		} else {                       
-		   $("form#dropzone").submit();
+		if (myDropzone.getQueuedFiles().length > 0) {
+			myDropzone.processQueue();
+		} else {
+			$("form#dropzone").submit();
 		}
     });
 
@@ -58,7 +58,9 @@ Dropzone.options.dropzone = { // The camelized version of the ID of the form ele
       // Show submit button here and/or inform user to click it.
     });
 
-    this.on("complete", function() {
+    this.on("complete", function(a, b, c, d) {
+    	console.log(a,b,c,d);
+    	window.location = a.xhr.responseURL;
     	console.log("complete");
     });
   }

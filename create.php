@@ -47,7 +47,7 @@ if (isset($_POST['create'])) {
 	        ":category" => $category,
 	        ":userId"   => \App\Auth::getUserId(),
 	    ]);
-	    
+
 	    // ticket id
 	    $ticketId = $dbh->lastInsertId();
 	    
@@ -62,14 +62,17 @@ if (isset($_POST['create'])) {
 	        ":message"  => $message,
 	        ":userId"   => \App\Auth::getUserId(),
 	    ]);
-	    
 
+		// get the message id
+		$messageId = $dbh->lastInsertId();
+
+		processAttachments($messageId);
 		$_SESSION['q'] = true;
-	    
-	    // redirect to ticket page
-	    header("Location: /ticket.php?id=" . $ticketId);
-	    exit;
-    }
+
+		// redirect to ticket page
+		header("Location: /ticket.php?id=" . $ticketId);
+		exit;
+	}
 }
 
 if (!empty($errors)) {
@@ -89,7 +92,9 @@ if (!empty($errors)) {
 
 <div class="clear"></div>
 
-<form action="" method="POST">
+<form action="/create.php" method="POST" class="dropzone" style="border:0px" id="dropzone" enctype="multipart/form-data">
+	<input type="hidden" name="create" value="hack" />
+
 	<div class="form-group">
 		<label for="name">Your Name:</label>
 		<input type="text" name="name" class="form-control" id="name" value="<?=htmlentities(isset($_SESSION['name']) ? $_SESSION['name'] : (isset($_POST['name']) ? trim($_POST['name']) : ""))?>" />
@@ -121,7 +126,12 @@ foreach ($categories as $category)
 		<textarea name="message" class="form-control" id="message" style="height:200px"><?=isset($message) ? htmlentities($message) : ""?></textarea>
 	</div>
 	
-	<button type="submit" name="create" class="btn btn-primary">Create</button>
+	<div class="dropzone-previews"></div>
+	<div class="fallback">
+		<input name="file" type="file" multiple />
+	</div>
+	
+	<button type="submit" class="btn btn-primary">Create</button>
 
 </form>
 

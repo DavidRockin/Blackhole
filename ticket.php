@@ -141,33 +141,12 @@ if (isset($_POST['reply']) && $ticket['status'] == 0) {
 		$updateTicket->execute([
 			":ticketId" => $ticket['ticket_id'],
 		]);
-		
-		if (true || !empty($_FILES) && !empty($_FILES['file'])) {
-			for ($i = 0; $i < count($_FILES['file']['name']); ++$i) {
-				try {
-					$ext      = explode(".", $_FILES['file']['name'][$i]);
-					$fileName = md5(microtime() . uniqid() . $_FILES['file']['name'][$i]) . (count($ext) > 0 ? "." . $ext[count($ext) - 1] : "");
 
-					$logFile = $dbh->prepare("INSERT INTO message_attachments VALUES(NULL, :messageId, :type, :name, :file, :ip, :size);");
-					$logFile->execute([
-						":messageId" => $messageId,
-						":type"      => $_FILES['file']['type'][$i],
-						":name"      => $_FILES['file']['name'][$i],
-						":file"      => $fileName,
-						":ip"        => $_SERVER['REMOTE_ADDR'],
-						":size"      => $_FILES['file']['size'][$i],
-					]);
-
-					move_uploaded_file($_FILES['file']['tmp_name'][$i], __DIR__ . "/uploads/" . $fileName);
-				} catch (\Exception $ex) {
-					// ...
-				}
-			}
-		}
+		processAttachments($messageId);
 
 		header("Location: /ticket.php?id=" . $ticket['ticket_id'] . "#msg" . $messageId);
 		exit;
-    }
+	}
 }
 
 if (isset($_SESSION['q'])) {

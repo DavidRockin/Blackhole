@@ -2,6 +2,7 @@
 
 // predefine some consts for the application
 define("LIBDIR", dirname(__FILE__) . "/");
+define("PUBDIR", dirname(__DIR__)  . "/");
 
 // load the boostrap
 include LIBDIR . "bootstrap.php";
